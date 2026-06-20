@@ -27,7 +27,6 @@ export const getTasks = async (status) => {
         const res = await axiosInstance.get("/tasks/getTasks", {
             params: { status }
         })
-        console.log(res.data)
         return res.data;
     } catch (error) {
         console.log("Get Tasks Error: ", error)
@@ -37,7 +36,6 @@ export const getTasks = async (status) => {
 
 export const deleteTask = async (id) => {
     try {
-        console.log(id)
         const res = await axiosInstance.delete(`/tasks/deleteTask/${id}`);
         return res.data;
     } catch (error) {
@@ -48,7 +46,6 @@ export const deleteTask = async (id) => {
 
 
 export const completeTask = async (id) => {
-    console.log(id)
     try {
         const res = await axiosInstance.patch(`/tasks/${id}/complete`);;
         return res.data;
@@ -57,4 +54,32 @@ export const completeTask = async (id) => {
         throw error
     }
 }
+
+export const getTaskById = async (id) => {
+    try {
+        const res = await axiosInstance.get("/tasks/getTaskById", {
+            params: { id }
+        })
+        return res.data?.task
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+export const updateTask = async (taskData) => {
+  try {
+    console.log(taskData)
+
+    const res = await axiosInstance.post(
+      "/tasks/updateTask",
+      taskData
+    );
+
+    return res.data;
+  } catch (error) {
+    console.log("Update Task Axios Error: ", error);
+    throw error;
+  }
+};
 

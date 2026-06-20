@@ -12,9 +12,8 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
-          <a href="#features">Features</a>
-          <a href="#stats">Statistics</a>
-          <a href="#tasks">Tasks</a>
+          
+          <a href="/tasks" className="underline font-bold font-3xl" >Tasks</a>
         </nav>
 
         <Button>

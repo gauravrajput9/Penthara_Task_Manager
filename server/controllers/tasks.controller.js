@@ -135,3 +135,68 @@ export const deleteTask = async (req, res) => {
         })
     }
 }
+
+
+export const getTaskById = async (req, res) => {
+    try {
+        const { id } = req.query;
+        if (!id) {
+            return res.status(401).json({
+                success: false,
+                message: "Id Not Found to fetch tasks"
+            })
+        }
+        const task = await Task.findById(id);
+        if (!task) {
+            return res.status(400).json({
+                message: "Task Not Found",
+                success: false
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Task Fetched Successfully",
+            task
+        })
+    } catch (error) {
+        console.log("Get Task By ID Controller Error: ", error);
+        return req.status(500).json({
+            message: "Internal Server Error",
+            success: false
+        })
+    }
+}
+
+
+export const updateTask = async (req, res) => {
+    try {
+        const { id, title, description, priority, dueDate } = req.body;
+        const updatedTask = await Task.findByIdAndUpdate(id, {
+            title: title,
+            description: description,
+            priority: priority,
+            dueDate: dueDate
+        }, {
+            new: true
+        })
+        if (!updateTask) {
+            return res.status(401).json({
+                success: false,
+                message: "Couldn't update task"
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "updated task successfully",
+            updatedTask
+        });
+    } catch (error) {
+        console.log("Update Task Controller Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};

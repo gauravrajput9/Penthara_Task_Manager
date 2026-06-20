@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/card";
 
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 export function TaskCard({ task, onDelete, onComplete }) {
+  const navigate = useNavigate();
   if (!task) return null;
 
   return (
@@ -67,6 +69,9 @@ export function TaskCard({ task, onDelete, onComplete }) {
             Mark Done
           </Button>
         )}
+        <Button onClick={() => navigate(`/tasks/edit/${task._id}`)}>
+          Edit
+        </Button>
       </CardFooter>
     </Card>
   );

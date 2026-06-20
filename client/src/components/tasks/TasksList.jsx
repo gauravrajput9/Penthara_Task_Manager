@@ -1,15 +1,15 @@
 import { completeTask, deleteTask, getTasks } from "@/lib/axios";
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useSearchParams } from "react-router-dom";
 import { TaskCard } from "./TasksCard";
 import { toast } from "react-toastify";
-
-
+import { Button } from "../ui/button";
+import { Home } from "lucide-react";
 
 const TasksList = () => {
   const [params] = useSearchParams();
   const status = params.get("status") || "all";
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const getTasksQuery = useQuery({
     queryKey: ["tasks", status],
@@ -35,7 +35,7 @@ const TasksList = () => {
       toast.error(error.message || "Cannot Delete Task");
     },
     onSuccess: () => {
-      toast.success("Task MArked As Completed");
+      toast.success("Task Marked As Completed");
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
@@ -48,30 +48,46 @@ const TasksList = () => {
   };
 
   return (
-  <div className="min-h-screen w-full bg-zinc-950 text-white px-4 py-8">
-    <div className="mx-auto max-w-5xl">
-      
-      <h1 className="text-3xl font-bold mb-6 tracking-tight">
-        Your Tasks
-      </h1>
+    <div className="min-h-screen w-full bg-background text-foreground px-4 py-8">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="text-3xl font-bold mb-6 tracking-tight">Your Tasks</h1>
+        <div className="flex mb-5 gap-3">
+          <Link to="/">
+            <Button>
+              <Home className="h-4 w-4" />
+              Home
+            </Button>
+          </Link>
 
-      <ul className="grid gap-5 sm:grid-cols-2">
-        {getTasksQuery?.data?.status_tasks?.map((task) => (
-          <li key={task._id}>
-            <TaskCard
-              task={task}
-              completeMutation={completeMutation}
-              deleteMutation={deleteMutation}
-              onComplete={handleComplete}
-              onDelete={handleDelete}
-            />
-          </li>
-        ))}
-      </ul>
+          <Link to="/create-task">
+            <Button>Create Task</Button>
+          </Link>
+        </div>
 
+        <ul className="grid gap-5 sm:grid-cols-2">
+          {getTasksQuery?.data?.status_tasks.length === 0 ? (
+            <div className="flex gap-2 font-extrabold font-2xl" >
+              <p>No</p>
+              <span>{status.toUpperCase()}</span>
+              <p>Tasks Found</p>
+            </div>
+          ) : (
+            getTasksQuery?.data?.status_tasks?.map((task) => (
+              <li key={task._id}>
+                <TaskCard
+                  task={task}
+                  completeMutation={completeMutation}
+                  deleteMutation={deleteMutation}
+                  onComplete={handleComplete}
+                  onDelete={handleDelete}
+                />
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default TasksList;

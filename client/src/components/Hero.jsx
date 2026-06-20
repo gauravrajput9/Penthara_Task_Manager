@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -19,22 +20,15 @@ export default function Hero() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-muted-foreground text-lg">
-          Create, manage, and complete tasks with a modern
-          task management experience powered by React,
-          Express, MongoDB, and smart filtering.
+          Create, manage, and complete tasks with a modern task management
+          experience powered by React, Express, MongoDB, and smart filtering.
         </p>
 
         <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-          <Button size="lg">
-            Create Task
-          </Button>
-
-          <Button
-            variant="outline"
-            size="lg"
-          >
-            View Dashboard
-          </Button>
+          <Link to="/createTask">
+            {" "}
+            <Button size="lg">Create Task</Button>
+          </Link>
         </div>
       </div>
     </section>

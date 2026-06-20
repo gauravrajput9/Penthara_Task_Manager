@@ -2,7 +2,6 @@ import Task from "../models/tasks.model.js";
 
 export const createTask = async (req, res) => {
     try {
-        console.log(req.body)
         const { title, description, priority, status, dueDate } = req.body;
 
         if (!title) {
@@ -52,7 +51,7 @@ export const createTask = async (req, res) => {
 
 export const getTasks = async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status } = req.query;
         let status_tasks;
         if (status === "all") {
             status_tasks = await Task.find();
@@ -63,7 +62,7 @@ export const getTasks = async (req, res) => {
         else {
             status_tasks = await Task.find({ completed: false })
         }
-        
+
         return res.status(200).json({
             status: true,
             message: "Tasks fetched successfully",
@@ -74,6 +73,65 @@ export const getTasks = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"
+        })
+    }
+}
+
+export const markTaskAsComplete = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(id)
+        if (!id) {
+            return res.status(401).json({
+                success: false,
+                message: "Cannot complete Task"
+            })
+        }
+        const task = await Task.findByIdAndUpdate(id, {
+            completed: true
+        }, { new: true })
+        console.log(task)
+        return res.status(201).json({
+            success: true,
+            message: "Updated Task successfully"
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error"
+        })
+    }
+}
+
+export const deleteTask = async (req, res) => {
+    try {
+        const { id } = req.params
+        if (!id) {
+            return res.status(401).json({
+                success: false,
+                message: "Cannot Delete Task"
+            })
+        }
+
+        const task = await Task.findByIdAndDelete(id)
+        if (!task) {
+            return res.json({
+                success: false,
+                message: "Task not Found"
+            })
+        }
+        return res.status(201).json({
+            success: true,
+            message: "Deleted Task Successfully"
+        })
+
+    } catch (error) {
+        console.log("Delete task Error: ", error)
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error'
         })
     }
 }

@@ -10,17 +10,38 @@ import {
 } from "../ui/select";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { createTask } from "@/lib/axios";
+import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 const CreateTask = () => {
   const [completeTask, setCompleteTask] = useState({
-    task: "",
+    title: "",
     description: "",
     priority: "medium",
     dueDate: "",
   });
 
-  console.log(completeTask);
+  const createTaskMutation = useMutation({
+    mutationFn: createTask,
 
+    onSuccess: (data) => {
+      toast.success("Created Task Successfully");
+      console.log("Created:", data);
+    },
+
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!completeTask) return;
+    createTaskMutation.mutate(completeTask);
+  };
+  
   return (
     <>
       <div className="container mx-auto max-w-5xl px-4 py-10">
@@ -35,17 +56,17 @@ const CreateTask = () => {
         </div>
 
         <div className="rounded-2xl border bg-card p-6 shadow-sm">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <label className="text-sm font-medium">Title</label>
 
               <Input
                 placeholder="Enter the New Task..."
-                value={completeTask.task}
+                value={completeTask.title}
                 onChange={(e) =>
                   setCompleteTask({
                     ...completeTask,
-                    task: e.target.value,
+                    title: e.target.value,
                   })
                 }
               />
@@ -111,7 +132,14 @@ const CreateTask = () => {
             </div>
 
             <Button type="submit" size="lg" className="w-full">
-              Create Task
+              {createTaskMutation.isPending ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <p>Create Task</p>
+                </>
+              ) : (
+                "Create Task"
+              )}
             </Button>
           </form>
         </div>

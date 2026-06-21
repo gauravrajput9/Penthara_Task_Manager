@@ -83,3 +83,13 @@ export const updateTask = async (taskData) => {
   }
 };
 
+
+export const markTaskIncomplete = async (id) =>{
+    try {
+        const res = await axiosInstance.patch(`/tasks/${id}/incomplete`)
+        return res.data
+    } catch (error) {
+        console.log("Mark Task incomplete axios: ", error)
+        throw error
+    }
+}

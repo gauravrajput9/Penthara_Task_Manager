@@ -1,4 +1,4 @@
-import { completeTask, deleteTask, getTasks } from "@/lib/axios";
+import { completeTask, deleteTask, getTasks, markTaskIncomplete } from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
 import { TaskCard } from "./TasksCard";
@@ -40,12 +40,24 @@ const TasksList = () => {
     },
   });
 
+  const incompleteMutation = useMutation({
+    mutationFn: (id) => markTaskIncomplete(id),
+    onSuccess: () =>{
+      toast.success("Task Marked As Incomplete")
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    }
+  })
+
   const handleDelete = (id) => {
     deleteMutation.mutate(id);
   };
   const handleComplete = (id) => {
     completeMutation.mutate(id);
   };
+  const handleIncomplete = (id) =>{
+    console.log(id)
+    incompleteMutation.mutate(id)
+  }
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground px-4 py-8">
@@ -59,7 +71,7 @@ const TasksList = () => {
             </Button>
           </Link>
 
-          <Link to="/create-task">
+          <Link to="/createTask">
             <Button>Create Task</Button>
           </Link>
         </div>
@@ -78,7 +90,9 @@ const TasksList = () => {
                   task={task}
                   completeMutation={completeMutation}
                   deleteMutation={deleteMutation}
+                  incompleteMutation={incompleteMutation}
                   onComplete={handleComplete}
+                  onIncomplete={handleIncomplete}
                   onDelete={handleDelete}
                 />
               </li>

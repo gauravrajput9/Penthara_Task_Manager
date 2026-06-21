@@ -31,7 +31,20 @@ export function TaskCard({
         <CardDescription>{task.description}</CardDescription>
 
         <div className="flex gap-2 mt-3">
-          <Badge variant="secondary">{task.priority.toUpperCase()}</Badge>
+          <Badge
+            variant="secondary"
+            className={
+              task.priority === "high"
+                ? "bg-red-600 text-white"
+                : task.priority === "medium"
+                  ? "bg-yellow-500 text-black"
+                  : task.priority === "low"
+                    ? "bg-green-600 text-white"
+                    : ""
+            }
+          >
+            {task.priority.toUpperCase()}
+          </Badge>
 
           <Badge
             className={

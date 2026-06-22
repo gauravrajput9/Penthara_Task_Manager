@@ -51,7 +51,7 @@ export const createTask = async (req, res) => {
 
 export const getTasks = async (req, res) => {
     try {
-        const { status } = req.query;
+       const { status = "all" } = req.query;
         let status_tasks;
         if (status === "all") {
             status_tasks = await Task.find().sort({ createdAt: -1 });

@@ -27,7 +27,12 @@ const TasksList = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [priority, setPriority] = useState("all");
-  console.log(priority)
+  console.log(priority);
+  const priorityOrder = {
+    high: 3,
+    medium: 2,
+    low: 1,
+  };
 
   const getTasksQuery = useQuery({
     queryKey: ["tasks", status],
@@ -78,15 +83,17 @@ const TasksList = () => {
 
   const tasks = getTasksQuery.data?.status_tasks || [];
 
-  const filteredTasks = tasks.filter((task) => {
-    const matchesSearch = task.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
+  const filteredTasks = tasks
+    .filter((task) => {
+      const matchesSearch = task.title
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
-    const matchesPriority = priority === "all" || task.priority === priority;
+      const matchesPriority = priority === "all" || task.priority === priority;
 
-    return matchesSearch && matchesPriority;
-  });
+      return matchesSearch && matchesPriority;
+    })
+    .sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
 
   if (getTasksQuery.isLoading) {
     return (

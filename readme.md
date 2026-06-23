@@ -273,7 +273,57 @@ http://localhost:5173
 * Task Analytics Dashboard
 * Team Collaboration Features
 
----
+------------------------------------------------------------------------------------------------------
+
+## 📚 Libraries & External Resources
+
+### Frontend Libraries
+
+| Library        | Purpose                                   |
+| -------------- | ----------------------------------------- |
+| React          | Building the user interface               |
+| React Router   | Client-side routing                       |
+| TanStack Query | Server state management and data fetching |
+| Axios          | API communication                         |
+| Tailwind CSS   | Utility-first styling                     |
+| Shadcn UI      | Reusable and accessible UI components     |
+
+### UI Inspiration & Components
+
+* **21st.dev** — UI inspiration, component ideas, and modern design patterns.
+* **Shadcn UI** — Pre-built accessible UI components used throughout the application.
+
+### Backend Libraries
+
+| Library              | Purpose                 |
+| -------------------- | ----------------------- |
+| Node.js              | Runtime environment     |
+| Express.js           | Backend framework       |
+| MongoDB              | Database                |
+| Mongoose             | MongoDB object modeling |
+| JSON Web Token (JWT) | Authentication          |
+| bcrypt               | Password hashing        |
+
+### Learning Resources & References
+
+The following resources were used during development for research, troubleshooting, and implementation guidance:
+
+* Stack Overflow
+* MDN Web Docs
+* React Documentation
+* TanStack Query Documentation
+* Tailwind CSS Documentation
+* Shadcn UI Documentation
+* MongoDB Documentation
+* Mongoose Documentation
+* Express.js Documentation
+* JWT Documentation
+
+### Acknowledgements
+
+Special thanks to the open-source community and documentation maintainers whose resources helped during the development of this project.
+
+--------------------------------------------------------------------------------------------------------
 
 ## 🤝 Contributing
 

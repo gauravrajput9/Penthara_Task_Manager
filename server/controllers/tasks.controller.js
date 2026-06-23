@@ -71,7 +71,7 @@ export const getTasks = async (req, res) => {
         });
 
         return res.status(200).json({
-            status: true,
+            success: true,
             message: "Tasks fetched successfully",
             status_tasks,
         });
@@ -89,27 +89,35 @@ export const markTaskAsComplete = async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
                 message: "Cannot complete Task"
             })
         }
-        const task = await Task.findByIdAndUpdate({
+        const task = await Task.findOneAndUpdate({
             _id: id,
             user: req.user._id
         }, {
             completed: true
-        }, { new: true })
-        console.log(task)
-        return res.status(201).json({
+        }, { returnDocument: 'after' })
+
+        if (!task) {
+            return res.status(404).json({
+                success: false,
+                message: "Task not found"
+            })
+        }
+
+        return res.status(200).json({
             success: true,
-            message: "Updated Task successfully"
+            message: "Updated Task successfully",
+            task
         })
 
     } catch (error) {
         console.log(error)
         return res.status(500).json({
-            status: false,
+            success: false,
             message: "Internal Server Error"
         })
     }
@@ -119,22 +127,26 @@ export const deleteTask = async (req, res) => {
     try {
         const { id } = req.params
         if (!id) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
                 message: "Cannot Delete Task"
             })
         }
 
-        const task = await Task.findByIdAndDelete(id)
+        const task = await Task.findOneAndDelete({
+            _id: id,
+            user: req.user._id
+        })
         if (!task) {
-            return res.json({
+            return res.status(404).json({
                 success: false,
                 message: "Task not Found"
             })
         }
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
-            message: "Deleted Task Successfully"
+            message: "Deleted Task Successfully",
+            task
         })
 
     } catch (error) {
@@ -148,16 +160,19 @@ export const deleteTask = async (req, res) => {
 
 export const getTaskById = async (req, res) => {
     try {
-        const { id } = req.query;
+        const { id } = req.params;
         if (!id) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
                 message: "Id Not Found to fetch tasks"
             })
         }
-        const task = await Task.findById(id);
+        const task = await Task.findOne({
+            _id: id,
+            user: req.user._id
+        });
         if (!task) {
-            return res.status(400).json({
+            return res.status(404).json({
                 message: "Task Not Found",
                 success: false
             })
@@ -169,7 +184,7 @@ export const getTaskById = async (req, res) => {
         })
     } catch (error) {
         console.log("Get Task By ID Controller Error: ", error);
-        return req.status(500).json({
+        return res.status(500).json({
             message: "Internal Server Error",
             success: false
         })
@@ -178,17 +193,21 @@ export const getTaskById = async (req, res) => {
 
 export const updateTask = async (req, res) => {
     try {
-        const { id, title, description, priority, dueDate } = req.body;
-        const updatedTask = await Task.findByIdAndUpdate(id, {
+        const {  title, description, priority, dueDate } = req.body;
+        const {id} = req.params
+        const updatedTask = await Task.findOneAndUpdate({
+            _id: id,
+            user: req.user._id
+        }, {
             title: title,
             description: description,
             priority: priority,
             dueDate: dueDate
-        }, { returnDocument: "after" })
-        if (!updateTask) {
-            return res.status(401).json({
+        }, { returnDocument: 'after', runValidators: true })
+        if (!updatedTask) {
+            return res.status(404).json({
                 success: false,
-                message: "Couldn't update task"
+                message: "Task not found"
             })
         }
 
@@ -226,7 +245,7 @@ export const markTaskIncomplete = async (req, res) => {
             {
                 completed: false
             },
-            { new: true }
+            { returnDocument: 'after' }
         );
 
         if (!task) {

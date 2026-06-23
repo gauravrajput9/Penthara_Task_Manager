@@ -47,40 +47,31 @@ const CreateTask = () => {
 
   const createTaskMutation = useMutation({
     mutationFn: createTask,
-
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("Created Task Successfully");
       navigate("/tasks");
-      console.log("Created:", data);
     },
-
     onError: (error) => {
-      console.log(error);
+      toast.error(error.message || "Cannot create task");
     },
   });
 
   const updateTaskMutation = useMutation({
-    mutationFn: (taskData) => updateTask(taskData),
-
+    mutationFn: updateTask,
     onSuccess: () => {
       navigate("/tasks");
       toast.success("Task Updated Successfully");
     },
-
     onError: (error) => {
-      console.log("ERROR:", error);
+      toast.error(error.message || "Cannot update task");
     },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("Mutation data: ", completeTask);
     if (isEditMode) {
-      updateTaskMutation.mutate({
-        id,
-        ...completeTask,
-      });
+      updateTaskMutation.mutate({ id, taskData: completeTask });
     } else {
       createTaskMutation.mutate(completeTask);
     }
@@ -89,7 +80,6 @@ const CreateTask = () => {
   return (
     <>
       <div className="container mx-auto max-w-7xl px-4 py-10">
-        {/* Header */}
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
             {isEditMode ? "Edit Task" : "Create A New Task"}
@@ -100,9 +90,7 @@ const CreateTask = () => {
           </p>
         </div>
 
-        {/* Main Layout */}
         <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
-          {/* Form Card */}
           <div className="rounded-2xl border bg-card p-6 shadow-sm">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
@@ -154,9 +142,9 @@ const CreateTask = () => {
                     </SelectTrigger>
 
                     <SelectContent>
-                      <SelectItem value="low">🟢 Low</SelectItem>
-                      <SelectItem value="medium">🟡 Medium</SelectItem>
-                      <SelectItem value="high">🔴 High</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -206,7 +194,6 @@ const CreateTask = () => {
             </form>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-4">
             <div className="sticky top-6 rounded-2xl border bg-card p-6 shadow-sm">
               <h2 className="mb-4 text-xl font-semibold">Filter Tasks</h2>

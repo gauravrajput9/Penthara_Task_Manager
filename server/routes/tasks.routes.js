@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { createTask, deleteTask, getTaskById, getTasks, markTaskAsComplete, markTaskIncomplete, updateTask } from "../controllers/tasks.controller.js";
+import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = Router();
-
+router.use(protectRoute)
 router.post("/createTask", createTask)
 router.get("/getTasks", getTasks)
 router.patch("/:id/complete", markTaskAsComplete)

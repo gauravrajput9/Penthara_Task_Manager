@@ -3,15 +3,22 @@ import StatusCard from "./dashboard-components/StatusCard";
 import PriorityCard from "./dashboard-components/PriorityCard";
 import RecentTasks from "./dashboard-components/RecentTasks";
 import { Button } from "./ui/button";
-import { getTasks } from "@/lib/axios";
+import { getTasks } from "@/lib/tasks.axios";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { getUser } from "@/lib/user.axios";
 
 const Dashboard = () => {
-     const { data } = useQuery({
+  const { data } = useQuery({
     queryKey: ["tasks"],
     queryFn: getTasks,
   });
+  const { data: user } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: getUser,
+    retry: false,
+  });
+  const userName = user?.user?.name || "there";
   const tasks = data?.status_tasks || [];
   return (
     <div className="min-h-screen bg-background">
@@ -23,12 +30,22 @@ const Dashboard = () => {
           </span>
 
           <h1 className="mt-4 text-5xl font-extrabold tracking-tight">
-            Welcome Back 👋
+            Welcome Back! {userName}
           </h1>
           <div className="mt-6 flex flex-wrap gap-3">
-           <Link to="/createTask"> <Button>Create Task</Button></Link>
-            <Link to="/tasks" ><Button variant="outline">View Tasks</Button></Link>
-            <Link to="/dashboard" ><Button variant="outline">Dashboard</Button></Link>
+            <Link to="/createTask">
+              {" "}
+              <Button>Create Task</Button>
+            </Link>
+            <Link to="/tasks">
+              <Button variant="outline">View Tasks</Button>
+            </Link>
+            <Link to="/dashboard">
+              <Button variant="outline">Dashboard</Button>
+            </Link>
+            <Link to={`/user/profile`}>
+              <Button>View Profile</Button>
+            </Link>
           </div>
 
           <p className="mt-3 text-lg text-muted-foreground">

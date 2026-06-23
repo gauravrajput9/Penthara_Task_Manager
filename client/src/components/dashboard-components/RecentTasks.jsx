@@ -6,7 +6,7 @@ import {
   completeTask,
   deleteTask,
   markTaskIncomplete,
-} from "@/lib/axios";
+} from "@/lib/tasks.axios";
 
 const RecentTasks = ({ tasks  }) => {
   console.log("Recent tasks: ",tasks)
@@ -66,7 +66,7 @@ const RecentTasks = ({ tasks  }) => {
       {/* Section Heading */}
       <div className="mb-8 text-center">
         <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          Recently Created Tasks (Not Completed)
+          Recently Created Tasks 
         </h2>
 
         <p className="mt-2 text-muted-foreground">

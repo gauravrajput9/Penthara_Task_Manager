@@ -11,7 +11,7 @@ import {
 import { Button } from "../ui/button";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createTask, getTaskById, updateTask } from "@/lib/axios";
+import { createTask, getTaskById, updateTask } from "@/lib/tasks.axios";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 

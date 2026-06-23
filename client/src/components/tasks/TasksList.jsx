@@ -3,7 +3,7 @@ import {
   deleteTask,
   getTasks,
   markTaskIncomplete,
-} from "@/lib/axios";
+} from "@/lib/tasks.axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
 import { TaskCard } from "./TasksCard";
@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import Loading from "../Loading";
+import Error from "../Error";
 
 const TasksList = () => {
   const [params] = useSearchParams();
@@ -27,7 +29,7 @@ const TasksList = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [priority, setPriority] = useState("all");
-  console.log(priority);
+
   const priorityOrder = {
     high: 3,
     medium: 2,
@@ -96,18 +98,15 @@ const TasksList = () => {
     .sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
 
   if (getTasksQuery.isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-lg font-medium">Loading Tasks...</p>
-      </div>
-    );
+    return <Loading message="Loading your tasks..." />;
   }
 
   if (getTasksQuery.isError) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-lg text-red-500">Failed to load tasks.</p>
-      </div>
+      <Error
+        message={getTasksQuery.error?.message || "Failed to load tasks"}
+        onRetry={() => getTasksQuery.refetch()}
+      />
     );
   }
 

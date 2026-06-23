@@ -8,7 +8,6 @@ import {
 
 const TasksStatusCards = ({tasks}) => {
   
-
   const totalTasks = tasks.length
   
   const completedTasks = tasks.filter(

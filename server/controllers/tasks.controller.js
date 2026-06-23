@@ -3,6 +3,7 @@ import Task from "../models/tasks.model.js";
 export const createTask = async (req, res) => {
     try {
         const { title, description, priority, status, dueDate } = req.body;
+        const user = req.user
 
         if (!title) {
             return res.status(400).json({
@@ -30,7 +31,8 @@ export const createTask = async (req, res) => {
             description,
             priority,
             status,
-            dueDate
+            dueDate,
+            user: user._id
         });
 
         return res.status(201).json({
@@ -48,34 +50,40 @@ export const createTask = async (req, res) => {
     }
 };
 
-
 export const getTasks = async (req, res) => {
     try {
-       const { status = "all" } = req.query;
-        let status_tasks;
-        if (status === "all") {
-            status_tasks = await Task.find().sort({ createdAt: -1 });
+        const { status = "all" } = req.query;
+
+        const query = {
+            user: req.user._id,
+        };
+
+        if (status === "completed") {
+            query.completed = true;
         }
-        else if (status === "completed") {
-            status_tasks = await Task.find({ completed: true }).sort({ createdAt: -1 });
+
+        if (status === "pending") {
+            query.completed = false;
         }
-        else {
-            status_tasks = await Task.find({ completed: false }).sort({ createdAt: -1 });
-        }
+
+        const status_tasks = await Task.find(query).sort({
+            createdAt: -1,
+        });
 
         return res.status(200).json({
             status: true,
             message: "Tasks fetched successfully",
-            status_tasks
-        })
+            status_tasks,
+        });
     } catch (error) {
-        console.log("Get Tasks Error", error)
+        console.log("Get Tasks Error", error);
+
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error"
-        })
+            message: "Internal Server Error",
+        });
     }
-}
+};
 
 export const markTaskAsComplete = async (req, res) => {
     try {
@@ -86,7 +94,10 @@ export const markTaskAsComplete = async (req, res) => {
                 message: "Cannot complete Task"
             })
         }
-        const task = await Task.findByIdAndUpdate(id, {
+        const task = await Task.findByIdAndUpdate({
+            _id: id,
+            user: req.user._id
+        }, {
             completed: true
         }, { new: true })
         console.log(task)
@@ -135,7 +146,6 @@ export const deleteTask = async (req, res) => {
     }
 }
 
-
 export const getTaskById = async (req, res) => {
     try {
         const { id } = req.query;
@@ -166,7 +176,6 @@ export const getTaskById = async (req, res) => {
     }
 }
 
-
 export const updateTask = async (req, res) => {
     try {
         const { id, title, description, priority, dueDate } = req.body;
@@ -175,9 +184,7 @@ export const updateTask = async (req, res) => {
             description: description,
             priority: priority,
             dueDate: dueDate
-        }, {
-            new: true
-        })
+        }, { returnDocument: "after" })
         if (!updateTask) {
             return res.status(401).json({
                 success: false,
@@ -200,35 +207,46 @@ export const updateTask = async (req, res) => {
     }
 };
 
-
 export const markTaskIncomplete = async (req, res) => {
     try {
-        const { id } = req.params
+        const { id } = req.params;
+
         if (!id) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
-                message: "Cannot mark task as incomplete"
-            })
+                message: "Task ID is required"
+            });
         }
-        const task = await Task.findByIdAndUpdate(id, {
-            completed: false
-        }, { new: true })
+
+        const task = await Task.findOneAndUpdate(
+            {
+                _id: id,
+                user: req.user._id
+            },
+            {
+                completed: false
+            },
+            { new: true }
+        );
+
         if (!task) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
-                message: "Cannot mark task as incomplete"
-            })
+                message: "Task not found"
+            });
         }
+
         return res.json({
             message: "Marked As Incomplete",
             success: true,
             task
-        })
+        });
+
     } catch (error) {
-        console.log("Mark incomplete: ", error)
+        console.log("Mark incomplete: ", error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"
-        })
+        });
     }
-}
+};

@@ -44,7 +44,6 @@ export const deleteTask = async (id) => {
     }
 }
 
-
 export const completeTask = async (id) => {
     try {
         const res = await axiosInstance.patch(`/tasks/${id}/complete`);;

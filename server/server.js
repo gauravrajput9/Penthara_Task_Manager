@@ -4,8 +4,11 @@ import dotenv from "dotenv"
 import connectDB from "./utils/mongoConnect.js";
 dotenv.config();
 import taskRouter from "./routes/tasks.routes.js"
+import userRouter from "./routes/user.routes.js"
+import cookieParser from "cookie-parser"
 
 const app = express();
+app.use(cookieParser())
 app.use(express.json());
 app.use(
     cors({
@@ -13,6 +16,8 @@ app.use(
         credentials: true,
     })
 );
+
+app.use("/api/user", userRouter)
 app.use("/api/tasks", taskRouter)
 app.get("/", (_, res) => {
     res.json({

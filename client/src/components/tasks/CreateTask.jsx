@@ -14,6 +14,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createTask, getTaskById, updateTask } from "@/lib/tasks.axios";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
+import Loading from "../Loading";
+import Error from "../Error";
 
 const CreateTask = () => {
   const { id } = useParams();
@@ -27,11 +29,13 @@ const CreateTask = () => {
     dueDate: "",
   });
 
-  const { data: task } = useQuery({
+  const taskQuery = useQuery({
     queryKey: ["task", id],
     queryFn: () => getTaskById(id),
     enabled: !!id,
   });
+
+  const task = taskQuery.data;
 
   useEffect(() => {
     if (!task) return;
@@ -76,6 +80,19 @@ const CreateTask = () => {
       createTaskMutation.mutate(completeTask);
     }
   };
+
+  if (isEditMode && taskQuery.isLoading) {
+    return <Loading message="Loading task..." />;
+  }
+
+  if (isEditMode && taskQuery.isError) {
+    return (
+      <Error
+        message={taskQuery.error?.message || "Failed to load task"}
+        onRetry={() => taskQuery.refetch()}
+      />
+    );
+  }
 
   return (
     <>

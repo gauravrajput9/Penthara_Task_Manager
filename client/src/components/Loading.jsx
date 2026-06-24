@@ -1,8 +1,17 @@
-const Loading = ({ message = "Loading..." }) => {
+const Loading = ({ message = "Loading...", compact = false }) => {
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2 py-1">
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500" />
+        <span className="text-sm text-muted-foreground">{message}</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center h-[60vh]">
-      <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-      <p className="mt-3 text-gray-600 text-sm">{message}</p>
+    <div className="flex h-[60vh] flex-col items-center justify-center">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500" />
+      <p className="mt-3 text-sm text-gray-600">{message}</p>
     </div>
   );
 };

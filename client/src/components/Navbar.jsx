@@ -5,9 +5,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUser, logoutUser } from "@/lib/user.axios";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import Loading from "@/components/Loading";
 
 export default function Navbar() {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["authUser"],
     queryFn: getUser,
     retry: false,
@@ -60,7 +61,9 @@ export default function Navbar() {
 
         {/* Desktop Right */}
         <div className="hidden md:flex items-center gap-3">
-          {!user ? (
+          {isLoading ? (
+            <Loading compact message="Loading..." />
+          ) : !user ? (
             <>
               <Button variant="outline" asChild>
                 <Link to="/user/login">Login</Link>
@@ -98,7 +101,9 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {mobileOpen && (
         <div className="md:hidden border-t bg-background px-4 py-4 space-y-4">
-          {user ? (
+          {isLoading ? (
+            <Loading compact message="Loading..." />
+          ) : user ? (
             <>
               <Link
                 to="/dashboard"

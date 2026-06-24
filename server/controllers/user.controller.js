@@ -16,16 +16,13 @@ export const register = async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "User already exists",
       });
     }
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      10
-    );
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
       name,
@@ -47,13 +44,19 @@ export const register = async (req, res) => {
   } catch (error) {
     console.log("Register Error:", error);
 
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
   }
 };
-
 
 export const login = async (req, res) => {
   try {
@@ -69,19 +72,16 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "Invalid Credentials",
       });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "Invalid Credentials",
       });

@@ -32,7 +32,7 @@ app.use("/api/user", userRouter);
 app.use("/api/tasks", taskRouter);
 
 app.get("/", (_, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
     message: "Task Tracker API Running",
   });

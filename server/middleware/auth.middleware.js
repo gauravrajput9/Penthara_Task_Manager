@@ -12,10 +12,7 @@ export const protectRoute = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!decoded) {
       return res.status(401).json({
@@ -24,14 +21,12 @@ export const protectRoute = async (req, res, next) => {
       });
     }
 
-    const user = await User.findById(decoded.userId).select(
-      "-password"
-    );
+    const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
-      return res.status(404).json({
+      return res.status(401).json({
         success: false,
-        message: "Middleware : User Not Found",
+        message: "Unauthorized - User Not Found",
       });
     }
 
@@ -40,6 +35,16 @@ export const protectRoute = async (req, res, next) => {
     next();
   } catch (error) {
     console.log("Protect Route Error:", error);
+
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError"
+    ) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized - Invalid or expired token",
+      });
+    }
 
     return res.status(500).json({
       success: false,

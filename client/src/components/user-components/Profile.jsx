@@ -1,37 +1,46 @@
 import { getUser } from "@/lib/user.axios";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../Loading";
+import Error from "../Error";
 import { getTasks } from "@/lib/tasks.axios";
 import TasksStatusCards from "../dashboard-components/TasksStatusCards";
 import { Link } from "react-router-dom";
 
 const Profile = () => {
-  const { data, isLoading, error } = useQuery({
+  const userQuery = useQuery({
     queryKey: ["authUser"],
     queryFn: getUser,
   });
 
-  const fetchTasksQuery = useQuery({
+  const tasksQuery = useQuery({
     queryKey: ["tasks"],
-    queryFn: getTasks,
+    queryFn: () => getTasks("all"),
   });
-  const tasks = fetchTasksQuery.data?.status_tasks || [];
-  console.log(tasks)
 
-  if (isLoading || fetchTasksQuery.isLoading) {
-    return <Loading />;
+  if (userQuery.isLoading || tasksQuery.isLoading) {
+    return <Loading message="Loading profile..." />;
   }
 
-  if (error) {
+  if (userQuery.isError) {
     return (
       <Error
-        message={fetchTasksQuery.error?.message || "Failed to load tasks"}
-        onRetry={() => fetchTasksQuery.refetch()}
+        message={userQuery.error?.message || "Failed to load profile"}
+        onRetry={() => userQuery.refetch()}
       />
     );
   }
 
-  const user = data?.user;
+  if (tasksQuery.isError) {
+    return (
+      <Error
+        message={tasksQuery.error?.message || "Failed to load tasks"}
+        onRetry={() => tasksQuery.refetch()}
+      />
+    );
+  }
+
+  const user = userQuery.data?.user;
+  const tasks = tasksQuery.data?.status_tasks || [];
 
   return (
     <div className="min-h-screen bg-background px-4 py-10 text-foreground">

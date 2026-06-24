@@ -7,19 +7,44 @@ import { getTasks } from "@/lib/tasks.axios";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { getUser } from "@/lib/user.axios";
+import Loading from "./Loading";
+import Error from "./Error";
 
 const Dashboard = () => {
-  const { data } = useQuery({
+  const tasksQuery = useQuery({
     queryKey: ["tasks"],
-    queryFn: getTasks,
+    queryFn: () => getTasks("all"),
   });
-  const { data: user } = useQuery({
+
+  const userQuery = useQuery({
     queryKey: ["authUser"],
     queryFn: getUser,
     retry: false,
   });
-  const userName = user?.user?.name || "there";
-  const tasks = data?.status_tasks || [];
+
+  const isLoading = tasksQuery.isLoading || userQuery.isLoading;
+  const isError = tasksQuery.isError || userQuery.isError;
+  const error = tasksQuery.error || userQuery.error;
+
+  if (isLoading) {
+    return <Loading message="Loading dashboard..." />;
+  }
+
+  if (isError) {
+    return (
+      <Error
+        message={error?.message || "Failed to load dashboard"}
+        onRetry={() => {
+          tasksQuery.refetch();
+          userQuery.refetch();
+        }}
+      />
+    );
+  }
+
+  const userName = userQuery.data?.user?.name || "there";
+  const tasks = tasksQuery.data?.status_tasks || [];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-7xl px-6 py-10">
@@ -34,7 +59,6 @@ const Dashboard = () => {
           </h1>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link to="/createTask">
-              {" "}
               <Button>Create Task</Button>
             </Link>
             <Link to="/tasks">
@@ -43,7 +67,7 @@ const Dashboard = () => {
             <Link to="/dashboard">
               <Button variant="outline">Dashboard</Button>
             </Link>
-            <Link to={`/user/profile`}>
+            <Link to="/user/profile">
               <Button>View Profile</Button>
             </Link>
           </div>
